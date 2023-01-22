@@ -1,5 +1,5 @@
-const WEBSOCKET_HOST = 'tetris.stacksmashing.net';
-const WEBSOCKET_PORT = 666;
+const WEBSOCKET_HOST = process.env.REACT_APP_WEBSOCKET_HOST;
+const WEBSOCKET_PORT = process.env.REACT_APP_WEBSOCKET_PORT;
 
 const fromHexString = hexString =>
     new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
