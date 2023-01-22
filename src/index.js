@@ -58,6 +58,7 @@ class OnlineTetris extends React.Component {
   StateStartingGame = "StartingGame";
   StateJoinGame = "SelectJoinGame";
   StateInGame = "InGame";
+  StateError = "StateError";
 
   constructor(props) {
     super(props);
@@ -199,6 +200,10 @@ class OnlineTetris extends React.Component {
       }
     },
     error => {
+      this.setState({
+        state: this.StateError,
+        errorMessage: error
+      });
       console.log("ERROR");
       console.log(error);
     });
@@ -235,6 +240,10 @@ class OnlineTetris extends React.Component {
   }
 
   handleJoinGame(name, game_code) {
+    if (!game_code || game_code.length != 4) {
+      console.error('not a valid input. must have length 4')
+      return;
+    }
     console.log("Join game");
     console.log(name);
     console.log(game_code);
@@ -500,6 +509,13 @@ class OnlineTetris extends React.Component {
             {/* <p>Unfortunately you need to reboot your Game Boy and refresh the page to try again.</p>
             <p>This is because stacksmashing is freaking lazy.</p> */}
             </div>)
+      } else if(this.state.state === this.StateError) {
+        return (
+          <div>
+            <h2>Error</h2>
+            <h3>{this.state.errorMessage}</h3>
+          </div>
+        )
       } else {
         return (
           <div>Invalid state {this.state.state}</div>
