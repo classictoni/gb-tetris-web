@@ -1,6 +1,23 @@
+const WEBSOCKET_HOST = 'tetris.stacksmashing.net';
+const WEBSOCKET_PORT = 666;
 
 const fromHexString = hexString =>
     new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+function getWell(hexNum) {
+    console.log(hexNum);
+    if (hexNum === 0x0c) {
+        return 2;
+    } else if (hexNum === 0x04 || hexNum === 0x18) {
+        return 4;
+    } else if (hexNum === 0x00 || hexNum === 0x10) {
+        return 6;
+    } else if (hexNum === 0x08) {
+        return 8;
+    } else {
+        return 10;
+    }
+}
 
 
     
@@ -13,6 +30,7 @@ class GBWebsocket {
     GAME_STATE_NONE = 9999
 
     constructor(url, name) {
+        console.log('url', url);
         this.ws = new WebSocket(url);
         this.ws.onmessage = (function(event) {
             console.log(this);
@@ -108,13 +126,13 @@ class GBWebsocket {
     }
 
     static initiateGame(name) {
-        var gb = new GBWebsocket("wss://server.tetris.stacksmashing.net:5678/create", name);
+        var gb = new GBWebsocket(`wss://${WEBSOCKET_HOST}:${WEBSOCKET_PORT}/create`, name);
         gb.admin = true;
         return gb;
     }
 
     static joinGame(name, code) {
-        return new GBWebsocket("wss://server.tetris.stacksmashing.net:5678/join/" + code, name)
+        return new GBWebsocket(`wss://${WEBSOCKET_HOST}:${WEBSOCKET_PORT}/join/` + code, name)
     }
 
     onMessage(event) {
@@ -136,11 +154,17 @@ class GBWebsocket {
                 this.uuid = message.uuid;
                 this.onuserinfo(this);
                 break;
+            case "garbage":
+                console.log("garbage:")
+                console.log(message.garbage);
+                this.garbage = fromHexString(String(message.garbage));
+                break;
             case "start_game":
                 console.log("Game starting!");
                 console.log("Tiles:")
                 console.log(message.tiles);
                 this.tiles = fromHexString(String(message.tiles));
+                //console.log(`\n\n${getWell(this.tiles[255])}\n\n`);
                 this.ongamestart(this);
                 break;
             case "game_update":

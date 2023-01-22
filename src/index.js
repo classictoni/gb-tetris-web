@@ -42,13 +42,6 @@ class Players extends React.Component {
 }
 
 
-// yes yes JS is sooo asynchronous, we get it, you vape
-function sleep(ms) {
-  var start = new Date().getTime(), expire = start + ms;
-  while (new Date().getTime() < expire) { }
-  return;
-}
-
 class OnlineTetris extends React.Component {
   SONG_A   = "1C"
   SONG_B   = "1D"
@@ -166,7 +159,7 @@ class OnlineTetris extends React.Component {
           if(value < 20) {
             this.updateLevel(value);
           } else if((value >= 0x80) && (value <= 0x85)) { // lines sent
-            console.log("Sending lines!");
+            console.log("Sending lines!", value.toString(16));
             this.gb.sendLines(value);
           }
           else if(value === 0xaa) { // we lost...
@@ -316,10 +309,10 @@ class OnlineTetris extends React.Component {
     // step 2: Send master indication
     this.serial.bufSendHex("29", 4);
 
-    console.log("Sending unknown bytes");
-    // step 3: send 100 unknown bytes
-    for(var i=0; i < 100; i++) {
-      this.serial.bufSendHex("83", 4);
+    console.log("Sending initial garbage", gb.garbage);
+    // step 3: send initial garbage
+    for(var i=0; i < gb.garbage.length; i++) {
+      this.serial.bufSend(new Uint8Array([gb.garbage[i]]), 4);
     }
 
     // step 4: send master again
@@ -328,8 +321,6 @@ class OnlineTetris extends React.Component {
     // step 5: send tiles
     for(var i=0; i < gb.tiles.length; i++) {
       this.serial.bufSend(new Uint8Array([gb.tiles[i]]), 4);
-      // this.serial.read(64);
-      // sleep(3);
     }
 
     // step 6: and go
