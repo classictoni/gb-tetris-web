@@ -162,8 +162,12 @@ class OnlineTetris extends React.Component {
           } else if((value >= 0x80) && (value <= 0x85)) { // lines sent
             console.log("Sending lines!", value.toString(16));
             this.gb.sendLines(value);
-          }
-          else if(value === 0xaa) { // we lost...
+          } else if(value === 0x77) { // we won by reaching 30 lines
+            this.setState({
+              state: this.StateFinished
+            });
+            this.gb.sendReached30Lines();
+          } else if(value === 0xaa) { // we lost...
             this.setState({
               state: this.StateFinished
             });
@@ -266,6 +270,7 @@ class OnlineTetris extends React.Component {
     this.gb.onuserinfo = this.gbUserInfo.bind(this);
     this.gb.onlines = this.gbLines.bind(this);
     this.gb.onwin = this.gbWin.bind(this);
+    this.gb.onlose = this.gbLose.bind(this);
   }
 
   testCreate() {
@@ -382,6 +387,15 @@ class OnlineTetris extends React.Component {
   gbWin(gb) {
     console.log("WIN!");
     this.serial.bufSendHex("AA", 50); // aa indicates BAR FULL
+    this.serial.bufSendHex("02", 50); // ffffinish
+    this.serial.bufSendHex("02", 50); // ffffinish
+    this.serial.bufSendHex("02", 50); // ffffinish
+    this.serial.bufSendHex("43", 50); // go to final screen. nice.
+  }
+
+  gbLose(gb) {
+    console.log("LOSE!");
+    this.serial.bufSendHex("77", 50); // aa indicates other player has reached 30 lines
     this.serial.bufSendHex("02", 50); // ffffinish
     this.serial.bufSendHex("02", 50); // ffffinish
     this.serial.bufSendHex("02", 50); // ffffinish

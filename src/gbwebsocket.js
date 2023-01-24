@@ -67,6 +67,10 @@ class GBWebsocket {
     this.onwin = function(gb) {
       console.log("Win not implemented!")
     }
+
+    this.onlose = function(gb) {
+      console.log("Lose not implemented!")
+    }
     console.log(this.ongameupdate);
 
     this.admin = false;
@@ -122,6 +126,12 @@ class GBWebsocket {
   sendDead() {
     this.ws.send(JSON.stringify({
       "type": "dead"
+    }))
+  }
+
+  sendReached30Lines() {
+    this.ws.send(JSON.stringify({
+      "type": "reached_30_lines"
     }))
   }
 
@@ -186,8 +196,10 @@ class GBWebsocket {
         this.onlines(this, message.lines);
         break;
       case "win":
-        console.log("Lines")
         this.onwin(this);
+        break;
+      case "reached_30_lines":
+        this.onlose(this);
         break;
       default:
         console.log("Unknown message");
