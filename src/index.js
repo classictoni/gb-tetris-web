@@ -32,7 +32,7 @@ class Players extends React.Component {
         {this.props.users.map((user, index) => (
           <div className="col-3">
             <h4>{user.name}</h4>
-            <p>{user.level}!</p>
+            <p>{user.height}!</p>
           </div>
         ))}
       </div>
@@ -68,7 +68,7 @@ class OnlineTetris extends React.Component {
       name: "Foo",
       game_code: "",
       users: [],
-      level: 0,
+      height: 0,
       difficulty: 0,
       uuid: "",
       admin: false
@@ -96,14 +96,14 @@ class OnlineTetris extends React.Component {
     });
   }
 
-  updateLevel(level) {
-    if(this.state.level !== level) {
-      console.log("Level increased!");
-      console.log(level);
+  updateHeight(height) {
+    if(this.state.height !== height) {
+      console.log("Height increased!");
+      console.log(height);
       this.setState({
-        level: level
+        height: height
       });
-      this.gb.sendLevel(level);
+      this.gb.sendHeight(height);
     }
   }
 
@@ -146,7 +146,7 @@ class OnlineTetris extends React.Component {
 
   startGameTimer() {
     setTimeout(() => {
-      this.serial.bufSendHex("02", 10); // fixed level
+      this.serial.bufSendHex("02", 10); // fixed height
       var data = this.serial.read(64).then( result => {
         var data = result.data.buffer;
         if(data.length > 1) {
@@ -158,7 +158,8 @@ class OnlineTetris extends React.Component {
           
           var value = (new Uint8Array(data))[0];
           if(value < 20) {
-            this.updateLevel(value);
+            this.updateHeight(value);
+            this.gbHeight();
           } else if((value >= 0x80) && (value <= 0x85)) { // lines sent
             console.log("Sending lines!", value.toString(16));
             this.gb.sendLines(value);
@@ -292,12 +293,12 @@ class OnlineTetris extends React.Component {
   }
 
   testUpdate() {
-    var level = this.state.level;
-    level += 1;
+    var height = this.state.height;
+    height += 1;
     this.setState({
-      level: level
+      height: height
     });
-    this.gb.sendLevel(level)
+    this.gb.sendHeight(height)
   }
 
   testStart() {
@@ -375,8 +376,14 @@ class OnlineTetris extends React.Component {
     console.log(gb.users)
     this.setState({
       game_code: gb.game_name,
-        users: gb.users
+      users: gb.users
     });
+  }
+
+  gbHeight() {
+    var heights = this.gb.getOtherUsers().map(u => u.height);
+    var maxHeight = Math.max(...heights);
+    this.serial.bufSend(new Uint8Array([maxHeight]), 10);
   }
 
   gbLines(gb, lines) {

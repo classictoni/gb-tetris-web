@@ -11,7 +11,7 @@ class Player extends React.Component {
         <div className="col-3">
           <img src={process.env.PUBLIC_URL + '/images/animation.gif'} className="gameboy" />
           <p><b>{this.props.user.name}</b><br/>
-          Height: {this.props.user.level}</p>
+          Height: {this.props.user.height}</p>
         </div>
       )
     } else if(this.props.user.state === this.STATE_DEAD) {

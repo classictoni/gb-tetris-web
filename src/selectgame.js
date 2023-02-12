@@ -72,7 +72,13 @@ class SelectGame extends React.Component {
                     <h4>Join game</h4>
                   </div>
                   <div className="card-text">
-                  <input type="text" className="form-control game-code-input" onChange={this.handleGameCodeChanged.bind(this)} value={this.state.game_code} placeholder="ABCDEF" />
+                  <input
+                    type="text"
+                    className="form-control game-code-input"
+                    onChange={this.handleGameCodeChanged.bind(this)}
+                    onKeyUp={(e) => e.key == 'Enter' ? this.props.onJoinGame(this.state.name, this.state.game_code): null}
+                    value={this.state.game_code}
+                    placeholder="ABCD" />
                   <button onClick={(e) => this.props.onJoinGame(this.state.name, this.state.game_code)} className="btn btn-lg btn-secondary">Join</button>
                   </div>
                 </div>

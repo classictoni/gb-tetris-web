@@ -89,6 +89,12 @@ class GBWebsocket {
     }));
   }
 
+  getOtherUsers() {
+    var res = this.users.filter(u => u.uuid != this.uuid);
+    console.log('res', res);
+    return res;
+  }
+
   waitForConnection() {
     if(this.ws.readyState === 1) {
       console.log("Connection ready")
@@ -110,10 +116,10 @@ class GBWebsocket {
     }));
   }
 
-  sendLevel(level) {
+  sendHeight(height) {
     this.ws.send(JSON.stringify({
       "type": "update",
-      "level": level
+      "height": height
     }));
   }
 
