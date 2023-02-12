@@ -135,6 +135,27 @@ class GBWebsocket {
     }))
   }
 
+  sendPresetRng(presetRng) {
+    var presetRngJson;
+    try {
+      presetRngJson = JSON.parse(presetRng);
+    } catch (e) {
+      presetRngJson = {
+        "garbage": presetRng,
+        "pieces": "",
+        "well_column": ""
+      }
+    }
+    var presetRngForServer = JSON.stringify({
+      "type": "preset_rng",
+      "garbage": presetRngJson.garbage,
+      "pieces": presetRngJson.pieces,
+      "well_column": presetRngJson.well_column,
+    });
+    console.log('sending', presetRngForServer)
+    this.ws.send(presetRngForServer);
+  }
+
   static initiateGame(name) {
     var gb = new GBWebsocket(`wss://${WEBSOCKET_HOST}:${WEBSOCKET_PORT}/create`, name);
     gb.admin = true;

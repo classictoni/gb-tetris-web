@@ -429,6 +429,10 @@ class OnlineTetris extends React.Component {
     });
   }
 
+  handleSendPresetRng(preset_rng) {
+    this.gb.sendPresetRng(preset_rng);
+  }
+
   render() {
     if (navigator.usb) {
       if (this.state.state === this.StateConnect) {
@@ -490,7 +494,7 @@ class OnlineTetris extends React.Component {
       } else if(this.state.state === this.StateLobby) {
         return(<div className="connect">
           {/* <h2>In lobby :)</h2> */}
-          <Lobby game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} onStartGame={() => this.handleStartGame()} />
+          <Lobby game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} onStartGame={() => this.handleStartGame()}  onSendPresetRng={(p) => this.handleSendPresetRng(p)}/>
         </div>)
       } else if(this.state.state === this.StateStartingGame) {
         return(<div className="connect">
