@@ -91,7 +91,6 @@ class GBWebsocket {
 
   getOtherUsers() {
     var res = this.users.filter(u => u.uuid != this.uuid);
-    console.log('res', res);
     return res;
   }
 

@@ -159,7 +159,8 @@ class OnlineTetris extends React.Component {
           var value = (new Uint8Array(data))[0];
           if(value < 20) {
             this.updateHeight(value);
-            this.gbHeight();
+            // TOOD: send height periodically (what freqency? 10 times per second)
+            //this.gbHeight();
           } else if((value >= 0x80) && (value <= 0x85)) { // lines sent
             console.log("Sending lines!", value.toString(16));
             this.gb.sendLines(value);
@@ -381,7 +382,7 @@ class OnlineTetris extends React.Component {
   }
 
   gbHeight() {
-    var heights = this.gb.getOtherUsers().map(u => u.height);
+    var heights = [0] + this.gb.getOtherUsers().map(u => u.height);
     var maxHeight = Math.max(...heights);
     this.serial.bufSend(new Uint8Array([maxHeight]), 10);
   }
