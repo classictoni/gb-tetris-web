@@ -180,7 +180,7 @@ class GBWebsocket {
 
     switch(message.type) {
       case "game_info":
-        console.log("New game info");
+        console.log("New game info", message);
         this.game_name = message.name;
         this.game_status = message.state;
         this.users = message.users;

@@ -10,16 +10,26 @@ class Player extends React.Component {
       return (
         <div className="col-3">
           <img src={process.env.PUBLIC_URL + '/images/animation.gif'} className="gameboy" />
-          <p><b>{this.props.user.name}</b><br/>
-          Height: {this.props.user.height}</p>
+          <p>
+            <b>{this.props.user.name}</b>
+            <br/>
+            Height: {this.props.user.height}
+            <br/>
+            Wins: {this.props.user.num_wins}
+          </p>
         </div>
       )
     } else if(this.props.user.state === this.STATE_DEAD) {
       return (
         <div className="col-3">
           <img src={process.env.PUBLIC_URL + '/images/dead.png'} className="gameboy" />
-          <p><b>{this.props.user.name}</b><br/>
-          Game Over</p>
+          <p>
+            <b>{this.props.user.name}</b>
+            <br/>
+            Game Over
+          </p>
+          <br/>
+          Wins: {this.props.user.num_wins}
         </div>
       )
     } else if(this.props.user.state === this.STATE_WINNER) {
@@ -28,6 +38,8 @@ class Player extends React.Component {
           <img src={process.env.PUBLIC_URL + '/images/win.png'} className="gameboy" />
           <p><b>{this.props.user.name}</b><br/>
           Winner!!!</p>
+          <br/>
+          Wins: {this.props.user.num_wins}
         </div>
       )
     }

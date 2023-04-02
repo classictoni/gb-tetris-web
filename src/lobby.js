@@ -18,25 +18,27 @@ class Lobby extends React.Component {
 
   render() {
     var userbar;
+    var settingsBar;
     if(this.props.admin) {
       userbar = <button onClick={(e) => this.props.onStartGame()} className="btn btn-lg btn-secondary">Start game!</button>
+      settingsBar = (<div>
+        <p>
+          &nbsp;
+        </p>
+        <h3>Optional: send custom Garbage, Pieces and Well column to the server</h3>
+        <p>
+          <a href="/minoselector" target="_blank">&gt; Click here to generate your own RNG &lt;</a>
+        </p>
+        <textarea rows="4" onChange={this.handlePresetRngChanged.bind(this)} value={this.state.preset_rng}></textarea>
+        <div>
+          <button onClick={(e) => this.props.onSendPresetRng(this.state.preset_rng)} className="btn btn-lg btn-secondary">Send RNG to Server</button>
+        </div>
+      </div>
+      )
     } else {
       userbar = <p>Please wait for the lobby leader to start the game!</p>
+      settingsBar = <span></span>
     }
-    var settingsBar = (<div>
-      <p>
-        &nbsp;
-      </p>
-      <h3>Optional: send custom Garbage, Pieces and Well column to the server</h3>
-      <p>
-        <a href="/minoselector" target="_blank">&gt; Click here to generate your own RNG &lt;</a>
-      </p>
-      <textarea rows="4" onChange={this.handlePresetRngChanged.bind(this)} value={this.state.preset_rng}></textarea>
-      <div>
-        <button onClick={(e) => this.props.onSendPresetRng(this.state.preset_rng)} className="btn btn-lg btn-secondary">Send RNG to Server</button>
-      </div>
-    </div>
-    )
 
     return (
       <div>

@@ -321,9 +321,22 @@ class OnlineTetris extends React.Component {
     console.log("Got game start.")
 
     // step 1: start game message
-    this.serial.bufSendHex("60", 150);
-    // step 2: Send master indication
-    this.serial.bufSendHex("29", 4);
+    if (this.isFirstGame()) {
+      console.log('is first game')
+      this.serial.bufSendHex("60", 150);
+      this.serial.bufSendHex("29", 4);
+    } else {
+      console.log('is not first game')
+      // begin communication again
+      this.serial.bufSendHex("60", 70);
+      this.serial.bufSendHex("02", 70);
+      this.serial.bufSendHex("02", 70);
+      this.serial.bufSendHex("02", 70);
+      this.serial.bufSendHex("79", 330);
+      // send start
+      this.serial.bufSendHex("60", 150);
+      this.serial.bufSendHex("29", 70);
+    }
 
     console.log("Sending initial garbage", gb.garbage);
     // step 3: send initial garbage
@@ -346,14 +359,13 @@ class OnlineTetris extends React.Component {
     this.serial.bufSendHex("02", 70);
     this.serial.bufSendHex("20", 70);
 
-    // Wait 3 seconds and then start game
+    // Wait 2 seconds and then start game
     setTimeout(() => {
       this.setState({
         state: this.StateInGame
       });
       this.startGameTimer();
     }, 2000)
-    
   }
 
   gbGameUpdate(gb) {
@@ -403,11 +415,20 @@ class OnlineTetris extends React.Component {
 
   gbLose(gb) {
     console.log("LOSE!");
-    this.serial.bufSendHex("77", 50); // aa indicates other player has reached 30 lines
+    this.serial.bufSendHex("77", 50); // 77 indicates other player has reached 30 lines
     this.serial.bufSendHex("02", 50); // ffffinish
     this.serial.bufSendHex("02", 50); // ffffinish
     this.serial.bufSendHex("02", 50); // ffffinish
     this.serial.bufSendHex("43", 50); // go to final screen. nice.
+  }
+
+  isFirstGame() {
+    for (var u of this.state.users) {
+      if (u.num_wins > 0) {
+        return false;
+      }
+    }
+    return true;
   }
 
   setMusic(music) {
@@ -430,7 +451,6 @@ class OnlineTetris extends React.Component {
   }
 
   handleStartGame() {
-    console.log("Starting game!");
     this.gb.sendStart();
     this.setState({
       state: this.StateStartingGame
@@ -502,7 +522,12 @@ class OnlineTetris extends React.Component {
       } else if(this.state.state === this.StateLobby) {
         return(<div className="connect">
           {/* <h2>In lobby :)</h2> */}
-          <Lobby game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} onStartGame={() => this.handleStartGame()}  onSendPresetRng={(p) => this.handleSendPresetRng(p)}/>
+          <Lobby
+              game_code={this.state.game_code}
+              users={this.state.users}
+              admin={this.state.admin}
+              onStartGame={() => this.handleStartGame()}
+              onSendPresetRng={(p) => this.handleSendPresetRng(p)}/>
         </div>)
       } else if(this.state.state === this.StateStartingGame) {
         return(<div className="connect">
@@ -513,6 +538,7 @@ class OnlineTetris extends React.Component {
         return(<div className="connect">
 
           <InGame game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} />
+          <button onClick={(e) => this.handleStartGame()} className="btn btn-lg btn-secondary">Start next game!</button>
         </div>)
         
       } else if(this.state.state === this.StateJoinGame) {
@@ -530,11 +556,10 @@ class OnlineTetris extends React.Component {
         )
       } else if(this.state.state === this.StateFinished) {
         return (<div className="connect">
-          <InGame game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} uuid={this.state.uuid} />
+            <InGame game_code={this.state.game_code} users={this.state.users} admin={this.state.admin} uuid={this.state.uuid} />
             <h2>Game finished!</h2>
-            {/* <p>Unfortunately you need to reboot your Game Boy and refresh the page to try again.</p>
-            <p>This is because stacksmashing is freaking lazy.</p> */}
-            </div>)
+            <button onClick={(e) => this.handleStartGame()} className="btn btn-lg btn-secondary">Start next game!</button>
+          </div>)
       } else if(this.state.state === this.StateError) {
         return (
           <div>
